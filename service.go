@@ -85,8 +85,8 @@ Loop:
 				break Loop
 			}
 			buffer = append(buffer, message)
-			tryFlush(false)
 		}
+		tryFlush(false)
 		timer.Stop()
 	}
 

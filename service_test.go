@@ -15,11 +15,12 @@ func TestService(t *testing.T) {
 		const (
 			bufferSize  = 10
 			deliverSize = int(1.5 * bufferSize)
+			interval    = 20 * time.Millisecond
 		)
 		cMessage := 0
 		cFlush := 0
 
-		s := NewService(bufferSize, time.Millisecond,
+		s := NewService(bufferSize, interval,
 			func(messages ...Message) error { cMessage += len(messages); cFlush += 1; return nil })
 
 		go s.Start()
@@ -28,12 +29,16 @@ func TestService(t *testing.T) {
 		for i := 0; i < deliverSize; i++ {
 			err := s.Push(ctx, Message{})
 			assert.NoError(t, err)
+
+			if i == 1 || i == 3 {
+				time.Sleep(interval * 2)
+			}
 		}
 
 		err := s.Stop(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, deliverSize, cMessage)
-		assert.Equal(t, int(math.Ceil(float64(deliverSize)/float64(bufferSize))), cFlush)
+		assert.Equal(t, 2+int(math.Ceil(float64(deliverSize)/float64(bufferSize))), cFlush)
 	})
 
 	t.Run("stopped", func(t *testing.T) {

@@ -10,6 +10,10 @@
 - 采用轻量级设计, 直接使用 [PugLogs](https://help.aliyun.com/document_detail/29026.html) 接口, 不依赖于 `github.com/aliyun/aliyun-log-go-sdk`
 - 内存占用较低, 大约是直接使用 sdk 的 70%
 
+## 安装
+
+`go get -u github.com/GotaX/logrus-aliyun-log-hook`
+
 ## 使用指南
 
 ```go

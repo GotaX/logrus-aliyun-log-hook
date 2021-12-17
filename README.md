@@ -7,7 +7,7 @@
 特点:
 
 - 采用非阻塞设计, 由一个后台线程将日志批量刷到远端日志库.
-- 采用轻量级设计, 直接使用 [PugLogs](https://help.aliyun.com/document_detail/29026.html) 接口, 不依赖于 `github.com/aliyun/aliyun-log-go-sdk`
+- 采用轻量级设计, 直接使用 [PutLogs](https://help.aliyun.com/document_detail/29026.html) 接口, 不依赖于 `github.com/aliyun/aliyun-log-go-sdk`
 - 内存占用较低, 大约是直接使用 sdk 的 70%
 
 ## 安装

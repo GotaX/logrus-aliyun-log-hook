@@ -29,7 +29,7 @@ func (c converter) Message(entry *logrus.Entry) Message {
 		contents[k] = v
 	}
 	contents[c.MessageKey] = entry.Message
-	contents[c.LevelKey] = strconv.Itoa(c.LevelMapping(entry.Level))
+	contents[c.LevelKey] = c.LevelMapping(entry.Level)
 	for k, v := range entry.Data {
 		switch v := v.(type) {
 		case string:

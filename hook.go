@@ -151,3 +151,5 @@ func (h *Hook) Fire(entry *logrus.Entry) error {
 func (h *Hook) Levels() []logrus.Level                 { return h.visibleLevels }
 func (h *Hook) Close() error                           { return h.CloseContext(context.Background()) }
 func (h *Hook) CloseContext(ctx context.Context) error { return h.service.Stop(ctx) }
+
+

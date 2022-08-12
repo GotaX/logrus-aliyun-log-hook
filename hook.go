@@ -11,6 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/GotaX/logrus-aliyun-log-hook/internal/validator"
+	"strings"
 )
 
 const (
@@ -32,13 +33,12 @@ var (
 	}
 	// Mapping to syslog level
 	SyslogLevelMapping = func() LevelMapping {
-		m := [7]int{0, 2, 3, 4, 6, 7, 8}
-		return func(level logrus.Level) int { return m[level] }
+		return func(level logrus.Level) string { return strings.ToUpper(level.String()) }
 	}()
 )
 
 // 日志级别映射
-type LevelMapping func(level logrus.Level) int
+type LevelMapping func(level logrus.Level) string
 
 // 日志配置
 type Config struct {

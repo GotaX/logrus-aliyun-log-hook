@@ -194,9 +194,10 @@ func TestHook(t *testing.T) {
 
 		hook := NewCustom(DefaultTimeout, DefaultVisibleLevels, converter, writer, service)
 
-		logrus.AddHook(hook)
+		logger := logrus.New()
+		logger.AddHook(hook)
 
-		logrus.Info("Hi")
+		logger.Info("Hi")
 
 		ctx, _ := context.WithTimeout(context.TODO(), time.Second)
 		err := hook.CloseContext(ctx)
@@ -220,8 +221,9 @@ func TestHook(t *testing.T) {
 		}
 
 		hook := NewCustom(DefaultTimeout, DefaultVisibleLevels, converter, writer, service)
-		logrus.AddHook(hook)
-		logrus.Info("Hi")
+		logger := logrus.New()
+		logger.AddHook(hook)
+		logger.Info("Hi")
 		err := hook.CloseContext(context.TODO())
 		assert.NoError(t, err)
 		assert.Equal(t, 1, counter)

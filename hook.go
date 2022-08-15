@@ -45,23 +45,24 @@ type Config struct {
 	// 阿里云日志接入地址, 格式: "<region>.log.aliyuncs.com",
 	// 例如: "cn-hangzhou-intranet.log.aliyuncs.com",
 	// 更多接入点参考: https://help.aliyun.com/document_detail/29008.html?spm=a2c4g.11174283.6.1118.292a1caaVMpfPu
-	Endpoint      string
-	AccessKey     string            // 密钥对: key
-	AccessSecret  string            // 密钥对: secret
-	Project       string            // 日志项目名称
-	Store         string            // 日志库名称
-	Topic         string            // 日志 __topic__ 字段
-	Source        string            // 日志 __source__ 字段, 可选, 默认为 hostname
-	Extra         map[string]string // 日志附加字段, 可选
-	BufferSize    int               // 本地缓存日志条数, 可选, 默认为 100
-	Timeout       time.Duration     // 写缓存最大等待时间, 可选, 默认为 500ms
-	Interval      time.Duration     // 缓存刷新间隔, 可选, 默认为 3s
-	MessageKey    string            // 日志 Message 字段映射, 可选, 默认为 "message"
-	LevelKey      string            // 日志 Level 字段映射, 可选, 默认为 "level"
-	LevelMapping  LevelMapping      // 日志 Level 内容映射, 可选, 默认按照 syslog 规则映射
-	VisibleLevels []logrus.Level    // 日志推送 Level, 可选, 默认推送 level >= info 的日志
-	HttpClient    *http.Client      // HTTP 客户端, 可选, 默认为 DefaultClient
-	uri           *url.URL
+	Endpoint        string
+	AccessKey       string            // 密钥对: key
+	AccessSecret    string            // 密钥对: secret
+	Project         string            // 日志项目名称
+	Store           string            // 日志库名称
+	Topic           string            // 日志 __topic__ 字段
+	Source          string            // 日志 __source__ 字段, 可选, 默认为 hostname
+	Extra           map[string]string // 日志附加字段, 可选
+	BufferSize      int               // 本地缓存日志条数, 可选, 默认为 100
+	Timeout         time.Duration     // 写缓存最大等待时间, 可选, 默认为 500ms
+	Interval        time.Duration     // 缓存刷新间隔, 可选, 默认为 3s
+	MessageKey      string            // 日志 Message 字段映射, 可选, 默认为 "message"
+	LevelKey        string            // 日志 Level 字段映射, 可选, 默认为 "level"
+	LevelMapping    LevelMapping      // 日志 Level 内容映射, 可选, 默认按照 syslog 规则映射
+	VisibleLevels   []logrus.Level    // 日志推送 Level, 可选, 默认推送 level >= info 的日志
+	HttpClient      *http.Client      // HTTP 客户端, 可选, 默认为 DefaultClient
+	ContentModifier ContentModifier   // 在发送前编辑日志内容, 可选, 默认为空
+	uri             *url.URL
 }
 
 func (c *Config) validate() (err error) {
@@ -119,7 +120,7 @@ func New(c Config) (*Hook, error) {
 
 	writer := NewWriter(c.uri, c.Topic, c.Source, c.AccessKey, Secret(c.AccessSecret), c.HttpClient)
 	service := NewService(c.BufferSize, c.Interval, writer.WriteMessage)
-	converter := NewConverter(c.MessageKey, c.LevelKey, c.LevelMapping, c.Extra)
+	converter := NewConverter(c.MessageKey, c.LevelKey, c.LevelMapping, c.Extra, c.ContentModifier)
 	hook := NewCustom(c.Timeout, c.VisibleLevels, converter, writer, service)
 	return hook, nil
 }

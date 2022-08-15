@@ -7,19 +7,33 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+type ContentModifier interface {
+	Modify(contents map[string]string)
+}
+
+type ContentModifierFunc func(map[string]string)
+
+func (f ContentModifierFunc) Modify(contents map[string]string) { f(contents) }
+
 type converter struct {
 	MessageKey   string
 	LevelKey     string
 	LevelMapping LevelMapping
 	Extra        map[string]string
+	Modifier     ContentModifier
 }
 
-func NewConverter(messageKey, levelKey string, levelMapping LevelMapping, extra map[string]string) *converter {
+func NewConverter(messageKey, levelKey string,
+	levelMapping LevelMapping,
+	extra map[string]string,
+	modifier ContentModifier,
+) *converter {
 	return &converter{
 		MessageKey:   messageKey,
 		LevelKey:     levelKey,
 		LevelMapping: levelMapping,
 		Extra:        extra,
+		Modifier:     modifier,
 	}
 }
 
@@ -44,6 +58,10 @@ func (c converter) Message(entry *logrus.Entry) Message {
 		default:
 			contents[k] = fmt.Sprintf("%v", v)
 		}
+	}
+
+	if c.Modifier != nil {
+		c.Modifier.Modify(contents)
 	}
 
 	return Message{
